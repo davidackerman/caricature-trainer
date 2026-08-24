@@ -31,7 +31,7 @@
 
   let facePool = [];         // full list loaded from faces/images.json
   let activePool = [];       // facePool filtered by selectedCategories for the current session
-  let selectedCategories = new Set(["adult", "child"]);
+  let selectedCategories = new Set(["adult", "child", "group"]);
   let shuffleQueue = [];     // remaining faces for this "lap" of the pool
   let lastFile = null;       // avoid immediate repeat across reshuffles
   let shownCount = 0;

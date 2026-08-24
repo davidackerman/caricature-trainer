@@ -50,12 +50,22 @@ This downloads ~300 portrait photos into `faces/` and writes
 Re-running the command later is safe — it resumes and only adds new photos.
 
 Useful flags:
-- `--count 500` — pool size
+- `--count 500` — total pool size (across all categories combined)
 - `--queries "portrait,headshot,elderly portrait"` — customize search terms
 - `--size large` (default) — Pexels image size to download; `large` (~650px
   tall) looks sharp filling a desktop screen while staying lightweight.
   Use `large2x` for even higher resolution, or `medium` to keep the repo
   smaller at the cost of looking soft on big screens.
+- `--category adult|child|group` (default: `adult`) — tags downloaded
+  photos for the trainer's Adults/Children/Groups toggle. Run the script
+  once per category with `--count` set to the running total you want, e.g.:
+  ```bash
+  pixi run download-faces --count 500                                     # adults (default)
+  pixi run download-faces --count 1000 --category child --queries "..."   # +500 kids
+  pixi run download-faces --count 1500 --category group --orientation landscape --queries "..."  # +500 groups
+  ```
+  Each run resumes from what's already on disk, so `--count` is always the
+  *total* you want across every category run so far, not an increment.
 
 **Never commit your API key.** It's only ever passed as a CLI flag when you
 run the script yourself; nothing in the deployed app needs it.
