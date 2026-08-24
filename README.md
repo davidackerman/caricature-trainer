@@ -17,16 +17,28 @@ files — no backend, no API calls during a practice session.
 
 Get a free API key at https://www.pexels.com/api/ (no cost, generous limits).
 
+Pass it with `--api-key` rather than setting an environment variable — it
+sidesteps shell differences (fish/nushell handle `export`/env vars
+differently than bash/zsh, and this way it just works everywhere):
+
+**With [pixi](https://pixi.sh) (recommended — no manual `pip install`):**
+
+```bash
+cd caricature-trainer
+pixi run download-faces --api-key "your-key-here" --count 300
+```
+
+**With plain pip:**
+
 ```bash
 cd caricature-trainer
 pip install -r tools/requirements.txt
-export PEXELS_API_KEY="your-key-here"
-python3 tools/download_pexels.py --count 300
+python3 tools/download_pexels.py --api-key "your-key-here" --count 300
 ```
 
 This downloads ~300 portrait photos into `faces/` and writes
 `faces/images.json` (filenames + photographer credit) and `faces/CREDITS.md`.
-Re-running the script later is safe — it resumes and only adds new photos.
+Re-running the command later is safe — it resumes and only adds new photos.
 
 Useful flags:
 - `--count 500` — pool size
@@ -34,8 +46,8 @@ Useful flags:
 - `--size medium` — Pexels image size to download (`medium` keeps files small
   and the repo lightweight; use `large` for higher resolution)
 
-**Never commit your API key.** It's only ever passed as an env var or CLI
-flag when you run the script yourself; nothing in the deployed app needs it.
+**Never commit your API key.** It's only ever passed as a CLI flag when you
+run the script yourself; nothing in the deployed app needs it.
 
 ## 2. Run it locally
 
@@ -43,7 +55,8 @@ Browsers block `fetch()` on `file://` pages, so serve the folder instead of
 double-clicking `index.html`:
 
 ```bash
-python3 -m http.server 8000
+pixi run serve
+# or: python3 -m http.server 8000
 ```
 
 Then open http://localhost:8000 in a browser.
