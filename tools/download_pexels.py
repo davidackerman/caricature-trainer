@@ -134,9 +134,10 @@ def main():
     parser.add_argument("--out", default=None, help="Output directory (default: ../faces relative to this script)")
     parser.add_argument("--orientation", default="portrait", choices=["portrait", "landscape", "square"],
                          help="Photo orientation to search for (default: portrait)")
-    parser.add_argument("--size", default="medium",
+    parser.add_argument("--size", default="large",
                          choices=["original", "large2x", "large", "medium", "small", "portrait", "tiny"],
-                         help="Pexels image size variant to download (default: medium)")
+                         help="Pexels image size variant to download (default: large, ~650px tall, "
+                              "sharp enough to fill a desktop screen)")
     parser.add_argument("--queries", default=None,
                          help="Comma-separated search terms (default: a built-in diverse set)")
     parser.add_argument("--delay", type=float, default=0.4, help="Seconds to sleep between requests (default: 0.4)")

@@ -52,8 +52,10 @@ Re-running the command later is safe — it resumes and only adds new photos.
 Useful flags:
 - `--count 500` — pool size
 - `--queries "portrait,headshot,elderly portrait"` — customize search terms
-- `--size medium` — Pexels image size to download (`medium` keeps files small
-  and the repo lightweight; use `large` for higher resolution)
+- `--size large` (default) — Pexels image size to download; `large` (~650px
+  tall) looks sharp filling a desktop screen while staying lightweight.
+  Use `large2x` for even higher resolution, or `medium` to keep the repo
+  smaller at the cost of looking soft on big screens.
 
 **Never commit your API key.** It's only ever passed as a CLI flag when you
 run the script yourself; nothing in the deployed app needs it.
