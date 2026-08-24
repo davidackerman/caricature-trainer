@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Caricature Practice Trainer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0b0b0e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Setup screen -->
+<section id="setup-screen" class="screen">
+  <div class="setup-card">
+    <h1>Caricature Practice Trainer</h1>
+    <p id="pool-status" class="muted">Loading face pool…</p>
+
+    <div class="field-group">
+      <label class="field-label">Switch face every</label>
+      <div class="pill-row" id="interval-pills">
+        <button type="button" class="pill" data-seconds="60">1 min</button>
+        <button type="button" class="pill" data-seconds="120">2 min</button>
+        <button type="button" class="pill" data-seconds="180">3 min</button>
+        <button type="button" class="pill" data-seconds="300">5 min</button>
+        <button type="button" class="pill" data-custom="1">Custom</button>
+      </div>
+      <div id="custom-interval-row" class="custom-row hidden">
+        <input type="number" id="custom-interval-input" min="1" step="1" placeholder="Seconds" inputmode="numeric">
+        <span class="muted small">seconds per face</span>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" for="session-length-input">Session length</label>
+      <div class="custom-row">
+        <input type="number" id="session-length-input" min="1" step="1" value="60" inputmode="numeric">
+        <span class="muted small">minutes</span>
+      </div>
+    </div>
+
+    <button type="button" id="start-btn" class="primary-btn" disabled>Start Session</button>
+    <p id="setup-error" class="error hidden"></p>
+  </div>
+</section>
+
+<!-- Practice screen -->
+<section id="practice-screen" class="screen hidden">
+  <div class="hud">
+    <span id="hud-next">Next: —</span>
+    <span id="hud-session">Session: —</span>
+  </div>
+
+  <div class="stage">
+    <img id="face-img" alt="Reference face for caricature practice">
+  </div>
+
+  <div class="controls">
+    <button type="button" id="pause-btn" class="ctrl-btn">Pause</button>
+    <button type="button" id="next-btn" class="ctrl-btn">Next</button>
+    <button type="button" id="fullscreen-btn" class="ctrl-btn">Fullscreen</button>
+    <button type="button" id="end-btn" class="ctrl-btn ctrl-btn-quiet">End</button>
+  </div>
+</section>
+
+<!-- Done screen -->
+<section id="done-screen" class="screen hidden">
+  <div class="setup-card">
+    <h1>Session complete</h1>
+    <p id="done-summary" class="muted"></p>
+    <button type="button" id="restart-btn" class="primary-btn">Start Another Session</button>
+  </div>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
