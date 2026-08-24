@@ -89,8 +89,9 @@
 
   // --- Setup screen ---
 
-  let selectedIntervalSeconds = null;
+  let selectedIntervalSeconds = 60; // default to the "1 min" pill
   let customMode = false;
+  intervalPillsRow.querySelector('[data-seconds="60"]')?.classList.add("active");
 
   intervalPillsRow.addEventListener("click", (e) => {
     const btn = e.target.closest(".pill");
