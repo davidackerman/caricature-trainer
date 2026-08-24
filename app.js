@@ -10,6 +10,7 @@
   };
 
   const poolStatus = el("pool-status");
+  const categoryPillsRow = el("category-pills");
   const intervalPillsRow = el("interval-pills");
   const customIntervalRow = el("custom-interval-row");
   const customIntervalInput = el("custom-interval-input");
@@ -28,7 +29,9 @@
   const doneSummary = el("done-summary");
   const restartBtn = el("restart-btn");
 
-  let facePool = [];        // full list loaded from faces/images.json
+  let facePool = [];         // full list loaded from faces/images.json
+  let activePool = [];       // facePool filtered by selectedCategories for the current session
+  let selectedCategories = new Set(["adult", "child"]);
   let shuffleQueue = [];     // remaining faces for this "lap" of the pool
   let lastFile = null;       // avoid immediate repeat across reshuffles
   let shownCount = 0;
@@ -56,8 +59,16 @@
     return a;
   }
 
+  function categoryOf(face) {
+    return face.category || "adult";
+  }
+
+  function poolForCategories(categories) {
+    return facePool.filter((f) => categories.has(categoryOf(f)));
+  }
+
   function refillQueue() {
-    let next = shuffle(facePool);
+    let next = shuffle(activePool);
     if (lastFile && next.length > 1 && next[0].file === lastFile) {
       [next[0], next[1]] = [next[1], next[0]];
     }
@@ -118,15 +129,39 @@
 
   sessionLengthInput.addEventListener("input", validateSetup);
 
+  categoryPillsRow.addEventListener("click", (e) => {
+    const btn = e.target.closest(".pill");
+    if (!btn) return;
+    const category = btn.dataset.category;
+    const willBeActive = !btn.classList.contains("active");
+
+    if (!willBeActive && selectedCategories.size === 1 && selectedCategories.has(category)) {
+      return; // keep at least one category selected
+    }
+
+    btn.classList.toggle("active", willBeActive);
+    if (willBeActive) selectedCategories.add(category);
+    else selectedCategories.delete(category);
+
+    updatePoolStatus();
+    validateSetup();
+  });
+
   function parseCustomInterval() {
     const v = Number(customIntervalInput.value);
     return Number.isFinite(v) && v > 0 ? v : null;
   }
 
+  function updatePoolStatus() {
+    if (facePool.length === 0) return;
+    const count = poolForCategories(selectedCategories).length;
+    poolStatus.textContent = `${count} face${count === 1 ? "" : "s"} ready with the current selection.`;
+  }
+
   function validateSetup() {
     const sessionMinutes = Number(sessionLengthInput.value);
     const ok =
-      facePool.length > 0 &&
+      poolForCategories(selectedCategories).length > 0 &&
       selectedIntervalSeconds != null &&
       selectedIntervalSeconds > 0 &&
       Number.isFinite(sessionMinutes) &&
@@ -135,6 +170,7 @@
   }
 
   startBtn.addEventListener("click", () => {
+    activePool = poolForCategories(selectedCategories);
     intervalSeconds = selectedIntervalSeconds;
     sessionSeconds = Number(sessionLengthInput.value) * 60;
     startSession();
@@ -250,7 +286,7 @@
       const data = await res.json();
       if (!Array.isArray(data) || data.length === 0) throw new Error("empty pool");
       facePool = data;
-      poolStatus.textContent = `${facePool.length} faces loaded and ready.`;
+      updatePoolStatus();
       setupError.classList.add("hidden");
     } catch (err) {
       facePool = [];

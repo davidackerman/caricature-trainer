@@ -140,6 +140,9 @@ def main():
                               "sharp enough to fill a desktop screen)")
     parser.add_argument("--queries", default=None,
                          help="Comma-separated search terms (default: a built-in diverse set)")
+    parser.add_argument("--category", default="adult", choices=["adult", "child"],
+                         help="Tag downloaded photos with this category, used by the trainer's "
+                              "Adults/Children toggle (default: adult)")
     parser.add_argument("--delay", type=float, default=0.4, help="Seconds to sleep between requests (default: 0.4)")
     args = parser.parse_args()
 
@@ -201,6 +204,7 @@ def main():
                 entries.append({
                     "file": filename,
                     "id": pid,
+                    "category": args.category,
                     "credit": f"Photo by {photographer} on Pexels",
                     "photographer_url": photo.get("photographer_url", ""),
                     "pexels_url": photo.get("url", ""),
