@@ -8,7 +8,7 @@ by index.html/app.js and never gets committed or deployed anywhere -- the
 web app only ever loads the already-downloaded jpgs and faces/images.json.
 
 Usage:
-    export PEXELS_API_KEY="your-key-here"
+    echo 'PEXELS_API_KEY=your-key-here' > .env   # once, at the project root
     python3 tools/download_pexels.py --count 300
 
 Get a free key at https://www.pexels.com/api/ (no cost, generous free tier).
@@ -33,20 +33,36 @@ except ImportError:
 API_URL = "https://api.pexels.com/v1/search"
 PER_PAGE = 80  # Pexels max per page
 
-# A spread of generic search terms to keep the pool visually diverse
-# (age, framing, expression) rather than one narrow look.
+# Caricature practice needs a face looking straight at the camera, so every
+# query is phrased toward front-on headshots rather than profile/candid shots
+# that only show part of the face.
 DEFAULT_QUERIES = [
-    "portrait face",
-    "headshot",
-    "smiling portrait",
-    "studio portrait",
-    "candid portrait",
-    "elderly portrait",
-    "portrait outdoors",
-    "man portrait",
-    "woman portrait",
-    "profile portrait",
+    "portrait face looking at camera",
+    "headshot facing camera",
+    "front facing portrait",
+    "close up face portrait",
+    "studio headshot",
+    "smiling headshot front view",
+    "id photo portrait",
+    "man portrait looking at camera",
+    "woman portrait looking at camera",
+    "elderly portrait facing camera",
 ]
+
+# Pexels' avg_color for a photo is a near-neutral gray when the photo itself
+# is black-and-white; a real color photo's channels spread out much more.
+GRAYSCALE_CHANNEL_SPREAD = 12
+
+
+def is_grayscale(hex_color):
+    if not hex_color or not hex_color.startswith("#"):
+        return False
+    hex_color = hex_color.lstrip("#")
+    try:
+        r, g, b = (int(hex_color[i:i + 2], 16) for i in (0, 2, 4))
+    except (ValueError, IndexError):
+        return False
+    return max(r, g, b) - min(r, g, b) <= GRAYSCALE_CHANNEL_SPREAD
 
 
 def load_existing(faces_dir: Path):
@@ -166,6 +182,8 @@ def main():
                     break
                 pid = photo["id"]
                 if pid in seen_ids:
+                    continue
+                if is_grayscale(photo.get("avg_color")):
                     continue
                 seen_ids.add(pid)
 
