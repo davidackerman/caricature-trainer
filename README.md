@@ -17,24 +17,33 @@ files — no backend, no API calls during a practice session.
 
 Get a free API key at https://www.pexels.com/api/ (no cost, generous limits).
 
-Pass it with `--api-key` rather than setting an environment variable — it
-sidesteps shell differences (fish/nushell handle `export`/env vars
-differently than bash/zsh, and this way it just works everywhere):
+To avoid typing the key every time, save it once in a `.env` file at the
+project root (already listed in `.gitignore`, so it never gets committed):
+
+```bash
+cd caricature-trainer
+echo 'PEXELS_API_KEY=your-key-here' > .env
+```
+
+The script checks, in order: `--api-key` flag → `PEXELS_API_KEY` env var →
+`.env` file — so once `.env` exists you can just run:
 
 **With [pixi](https://pixi.sh) (recommended — no manual `pip install`):**
 
 ```bash
-cd caricature-trainer
-pixi run download-faces --api-key "your-key-here" --count 300
+pixi run download-faces --count 300
 ```
 
 **With plain pip:**
 
 ```bash
-cd caricature-trainer
 pip install -r tools/requirements.txt
-python3 tools/download_pexels.py --api-key "your-key-here" --count 300
+python3 tools/download_pexels.py --count 300
 ```
+
+(You can still pass `--api-key "..."` directly instead of using `.env` if
+you prefer — it sidesteps shell differences too, since fish/nushell handle
+`export`/env vars differently than bash/zsh.)
 
 This downloads ~300 portrait photos into `faces/` and writes
 `faces/images.json` (filenames + photographer credit) and `faces/CREDITS.md`.

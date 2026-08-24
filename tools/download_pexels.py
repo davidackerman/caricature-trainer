@@ -94,10 +94,26 @@ def download_photo(session, url, dest_path):
             f.write(chunk)
 
 
+def load_dotenv_key(project_root: Path):
+    """Read PEXELS_API_KEY=... from a .env file at the project root, if present."""
+    env_path = project_root / ".env"
+    if not env_path.exists():
+        return None
+    for line in env_path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        if key.strip() == "PEXELS_API_KEY":
+            return value.strip().strip('"').strip("'")
+    return None
+
+
 def main():
+    project_root = Path(__file__).resolve().parent.parent
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--api-key", default=os.environ.get("PEXELS_API_KEY"),
-                         help="Pexels API key (defaults to PEXELS_API_KEY env var)")
+    parser.add_argument("--api-key", default=os.environ.get("PEXELS_API_KEY") or load_dotenv_key(project_root),
+                         help="Pexels API key (defaults to PEXELS_API_KEY env var, then a .env file)")
     parser.add_argument("--count", type=int, default=300, help="Total images to have on disk (default: 300)")
     parser.add_argument("--out", default=None, help="Output directory (default: ../faces relative to this script)")
     parser.add_argument("--orientation", default="portrait", choices=["portrait", "landscape", "square"],
@@ -113,7 +129,7 @@ def main():
     if not args.api_key:
         sys.exit("No API key. Pass --api-key or set PEXELS_API_KEY. Get one free at https://www.pexels.com/api/")
 
-    faces_dir = Path(args.out) if args.out else Path(__file__).resolve().parent.parent / "faces"
+    faces_dir = Path(args.out) if args.out else project_root / "faces"
     faces_dir.mkdir(parents=True, exist_ok=True)
 
     queries = [q.strip() for q in args.queries.split(",")] if args.queries else DEFAULT_QUERIES
